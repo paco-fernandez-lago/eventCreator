@@ -1,26 +1,25 @@
 # Event Creator
 
-Aplicación web para gestionar eventos con Vue 3 + Kotlin/Ktor + PostgreSQL.
+Web application for managing events built with Vue 3 + Kotlin/Ktor + PostgreSQL.
 
 ## Stack
 
-| Capa | Tecnología |
+| Layer | Technology |
 |---|---|
 | Frontend | Vue 3 + Vite + Vue Router |
 | Backend | Kotlin + Ktor |
-| Base de datos | PostgreSQL 16 |
+| Database | PostgreSQL 16 |
 | ORM | Exposed |
-| Migraciones | Flyway |
-| Contenedores | Docker + Docker Compose |
+| Containers | Docker + Docker Compose |
 
 ---
 
-## Requisitos
+## Requirements
 
 - Docker >= 24
 - Docker Compose >= 2.20
 
-Para desarrollo local sin Docker:
+For local development without Docker:
 - JDK 21
 - Gradle 8
 - Node.js 20
@@ -28,44 +27,44 @@ Para desarrollo local sin Docker:
 
 ---
 
-## Arrancar con Docker (recomendado)
+## Running with Docker (recommended)
 
 ```bash
-# 1. Clonar o descomprimir el proyecto
+# 1. Clone or unzip the project
 cd eventCreator
 
-# 2. Construir imágenes y levantar servicios
+# 2. Build images and start services
 docker compose up --build
 
-# 3. Abrir la aplicación en el navegador
+# 3. Open the app in your browser
 open http://localhost:5173
 ```
 
-Los tres servicios se arrancan automáticamente:
+All three services start automatically:
 - **frontend** → http://localhost:5173
 - **backend**  → http://localhost:8080
 - **postgres** → localhost:5432
 
-Las migraciones y el seed de datos de ejemplo se ejecutan automáticamente al arrancar el backend.
+Migrations and seed data run automatically when the backend starts.
 
-Para detener todo:
+To stop everything:
 ```bash
 docker compose down
 ```
 
-Para eliminar también los datos de la base de datos:
+To also remove the database volume:
 ```bash
 docker compose down -v
 ```
 
 ---
 
-## Desarrollo local (sin Docker)
+## Local development (without Docker)
 
-### Base de datos
+### Database
 
 ```bash
-# Con Docker solo para Postgres
+# Run only Postgres in Docker
 docker run -d \
   --name eventcreator-db \
   -e POSTGRES_DB=eventcreator \
@@ -80,15 +79,15 @@ docker run -d \
 ```bash
 cd backend
 
-# Copiar configuración de entorno
+# Copy environment config
 cp .env.example .env
 
-# Arrancar el servidor (Flyway ejecutará las migraciones automáticamente)
+# Start the server (migrations run automatically on startup)
 ./gradlew run
-# Disponible en http://localhost:8080
+# Available at http://localhost:8080
 ```
 
-### Ejecutar tests del backend
+### Run backend tests
 
 ```bash
 cd backend
@@ -101,17 +100,17 @@ cd backend
 cd frontend
 npm install
 npm run dev
-# Disponible en http://localhost:5173
+# Available at http://localhost:5173
 ```
 
 ---
 
-## Estructura del proyecto
+## Project structure
 
 ```
 eventCreator/
 ├── docker-compose.yml
-├── api-examples.http          ← ejemplos de peticiones HTTP
+├── api-examples.http          ← HTTP request examples
 │
 ├── backend/
 │   ├── Dockerfile
@@ -153,47 +152,47 @@ eventCreator/
 
 ---
 
-## API REST
+## REST API
 
 Base URL: `http://localhost:8080/api`
 
-| Método | Ruta | Descripción |
+| Method | Route | Description |
 |---|---|---|
-| GET | `/events` | Lista eventos. Params: `search`, `category`, `status`, `sort` |
-| GET | `/events/{id}` | Detalle de un evento |
-| POST | `/events` | Crear evento |
-| PUT | `/events/{id}` | Actualizar evento |
-| DELETE | `/events/{id}` | Eliminar evento |
+| GET | `/events` | List events. Params: `search`, `category`, `status`, `sort` |
+| GET | `/events/{id}` | Get event detail |
+| POST | `/events` | Create event |
+| PUT | `/events/{id}` | Update event |
+| DELETE | `/events/{id}` | Delete event |
 
-Ver `api-examples.http` para ejemplos completos de todas las peticiones.
+See `api-examples.http` for full examples of all requests.
 
-### Ejemplo: crear un evento
+### Example: create an event
 
 ```bash
 curl -X POST http://localhost:8080/api/events \
   -H "Content-Type: application/json" \
   -d '{
-    "title": "Mi Evento",
+    "title": "My Event",
     "eventDate": "2026-06-01",
     "eventTime": "10:00",
     "location": "Madrid",
-    "category": "Tecnología",
+    "category": "Technology",
     "capacity": 100,
     "price": 0,
-    "organizer": "Yo",
+    "organizer": "Me",
     "status": "draft"
   }'
 ```
 
 ---
 
-## Modelo de datos
+## Data model
 
-Tabla `events`:
+Table `events`:
 
-| Campo | Tipo | Restricciones |
+| Field | Type | Constraints |
 |---|---|---|
-| id | UUID | PK, autogenerado |
+| id | UUID | PK, auto-generated |
 | title | VARCHAR(255) | NOT NULL |
 | description | TEXT | nullable |
 | event_date | DATE | NOT NULL |
@@ -209,13 +208,13 @@ Tabla `events`:
 
 ---
 
-## Variables de entorno del backend
+## Backend environment variables
 
-Ver `backend/.env.example`:
+See `backend/.env.example`:
 
-| Variable | Default | Descripción |
+| Variable | Default | Description |
 |---|---|---|
-| PORT | 8080 | Puerto del servidor |
-| DB_URL | jdbc:postgresql://localhost:5432/eventcreator | URL de conexión |
-| DB_USER | eventuser | Usuario de PostgreSQL |
-| DB_PASSWORD | eventpass | Contraseña de PostgreSQL |
+| PORT | 8080 | Server port |
+| DB_URL | jdbc:postgresql://localhost:5432/eventcreator | Connection URL |
+| DB_USER | eventuser | PostgreSQL user |
+| DB_PASSWORD | eventpass | PostgreSQL password |

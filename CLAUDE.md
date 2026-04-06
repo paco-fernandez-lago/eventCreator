@@ -1,22 +1,22 @@
-# Event Creator — Guía para Claude
+# Event Creator — Guide for Claude
 
-## Qué es este proyecto
+## What this project is
 
-Aplicación web full-stack para gestionar eventos. MVP sin autenticación, pensado para ser simple y extensible.
+Full-stack web application for managing events. MVP with no authentication, designed to be simple and extensible.
 
 ## Stack
 
-| Capa | Tecnología |
+| Layer | Technology |
 |---|---|
 | Frontend | Vue 3 + Vite + Vue Router + Axios |
 | Backend | Kotlin + Ktor 2.3.x |
 | ORM | Exposed 0.53 |
-| Base de datos | PostgreSQL 16 |
-| Contenedores | Docker + Docker Compose |
+| Database | PostgreSQL 16 |
+| Containers | Docker + Docker Compose |
 
-> Flyway fue descartado — el classpath scanner no funciona correctamente en fat JARs. Las migraciones y el seed se ejecutan directamente en `DatabaseConfig.kt` via Exposed `transaction { exec(...) }`.
+> Flyway was dropped — the classpath scanner does not work correctly inside fat JARs. Migrations and seed data are executed directly in `DatabaseConfig.kt` via Exposed `transaction { exec(...) }`.
 
-## Arrancar el proyecto
+## Running the project
 
 ```bash
 docker compose up --build
@@ -24,18 +24,18 @@ docker compose up --build
 # Backend  → http://localhost:8080/api/events
 ```
 
-## Estructura
+## Structure
 
 ```
 eventCreator/
 ├── docker-compose.yml
-├── api-examples.http          ← ejemplos de peticiones (IntelliJ / VS Code REST Client)
+├── api-examples.http          ← request examples (IntelliJ / VS Code REST Client)
 │
 ├── backend/
-│   ├── build.gradle.kts       ← dependencias Gradle
-│   ├── .env.example           ← variables de entorno necesarias
+│   ├── build.gradle.kts       ← Gradle dependencies
+│   ├── .env.example           ← required environment variables
 │   └── src/main/kotlin/com/eventcreator/
-│       ├── Application.kt         ← entry point: JSON, CORS, StatusPages, init DB, rutas
+│       ├── Application.kt         ← entry point: JSON, CORS, StatusPages, DB init, routes
 │       ├── config/
 │       │   └── DatabaseConfig.kt  ← HikariCP pool + CREATE TABLE IF NOT EXISTS + seed
 │       ├── models/
@@ -43,45 +43,45 @@ eventCreator/
 │       ├── dto/
 │       │   └── EventDto.kt        ← EventRequest, EventResponse, ErrorResponse, validate()
 │       ├── repositories/
-│       │   └── EventRepository.kt ← CRUD con filtros via Exposed DSL
+│       │   └── EventRepository.kt ← CRUD with filters via Exposed DSL
 │       ├── services/
-│       │   └── EventService.kt    ← validación, ValidationException, NotFoundException
+│       │   └── EventService.kt    ← validation, ValidationException, NotFoundException
 │       └── routes/
-│           └── EventRoutes.kt     ← 5 endpoints REST
+│           └── EventRoutes.kt     ← 5 REST endpoints
 │
 └── frontend/src/
-    ├── api/events.js          ← cliente Axios centralizado (VITE_API_URL)
-    ├── router/index.js        ← 4 rutas con history mode
+    ├── api/events.js          ← centralised Axios client (VITE_API_URL)
+    ├── router/index.js        ← 4 routes with history mode
     ├── components/
-    │   ├── EventForm.vue      ← formulario compartido crear/editar (props: initialData, loading)
-    │   ├── EventCard.vue      ← tarjeta con acciones
-    │   ├── FilterBar.vue      ← búsqueda + filtros (v-model)
-    │   ├── ConfirmDialog.vue  ← modal de confirmación
-    │   └── StatusBadge.vue    ← badge por estado (draft/published/cancelled)
+    │   ├── EventForm.vue      ← shared create/edit form (props: initialData, loading)
+    │   ├── EventCard.vue      ← card with actions
+    │   ├── FilterBar.vue      ← search + filters (v-model)
+    │   ├── ConfirmDialog.vue  ← confirmation modal
+    │   └── StatusBadge.vue    ← badge by status (draft/published/cancelled)
     └── views/
-        ├── EventList.vue      ← listado con filtrado client-side
-        ├── EventDetail.vue    ← detalle + borrado
+        ├── EventList.vue      ← listing with client-side filtering
+        ├── EventDetail.vue    ← full detail + delete
         ├── EventCreate.vue    ← wraps EventForm
-        └── EventEdit.vue      ← wraps EventForm con carga previa
+        └── EventEdit.vue      ← wraps EventForm with pre-loaded data
 ```
 
-## API REST
+## REST API
 
 Base URL: `http://localhost:8080/api`
 
-| Método | Ruta | Descripción |
+| Method | Route | Description |
 |---|---|---|
-| GET | `/events` | Lista. Params: `search`, `category`, `status`, `sort` |
-| GET | `/events/{id}` | Detalle |
-| POST | `/events` | Crear → 201 |
-| PUT | `/events/{id}` | Actualizar → 200 |
-| DELETE | `/events/{id}` | Eliminar → 204 |
+| GET | `/events` | List. Params: `search`, `category`, `status`, `sort` |
+| GET | `/events/{id}` | Detail |
+| POST | `/events` | Create → 201 |
+| PUT | `/events/{id}` | Update → 200 |
+| DELETE | `/events/{id}` | Delete → 204 |
 
-Errores: `{ "error": "mensaje" }` con código HTTP apropiado.
+Errors: `{ "error": "message" }` with appropriate HTTP status code.
 
-## Modelo de datos (`events`)
+## Data model (`events`)
 
-| Campo | Tipo | Restricciones |
+| Field | Type | Constraints |
 |---|---|---|
 | id | UUID | PK, `gen_random_uuid()` |
 | title | VARCHAR(255) | NOT NULL |
@@ -97,13 +97,13 @@ Errores: `{ "error": "mensaje" }` con código HTTP apropiado.
 | created_at | TIMESTAMPTZ | NOT NULL |
 | updated_at | TIMESTAMPTZ | NOT NULL |
 
-## Decisiones técnicas relevantes
+## Key technical decisions
 
-- **Sin Flyway**: las migraciones usan `exec("CREATE TABLE IF NOT EXISTS ...")` directamente en `DatabaseConfig.kt`. El seed se inserta solo si la tabla está vacía.
-- **Sin autenticación**: decisión explícita del MVP.
-- **Filtrado client-side**: `EventList.vue` filtra localmente para evitar round-trips innecesarios.
-- **CSS propio**: sin librerías UI externas, todo en `src/assets/main.css` con variables CSS.
-- **`Events` extiende `Table`** (no `IdTable`): usar `insert { }[Events.id]` para obtener el UUID insertado, no `insertAndGetId`.
+- **No Flyway**: migrations use `exec("CREATE TABLE IF NOT EXISTS ...")` directly in `DatabaseConfig.kt`. Seed data is inserted only if the table is empty.
+- **No authentication**: explicit decision for the MVP.
+- **Client-side filtering**: `EventList.vue` filters locally to avoid unnecessary round-trips.
+- **Custom CSS**: no external UI libraries; everything is in `src/assets/main.css` using CSS variables.
+- **`Events` extends `Table`** (not `IdTable`): use `insert { }[Events.id]` to get the inserted UUID, not `insertAndGetId`.
 
 ## Tests
 
@@ -111,11 +111,11 @@ Errores: `{ "error": "mensaje" }` con código HTTP apropiado.
 cd backend && ./gradlew test
 ```
 
-Tests en `EventRoutesTest.kt` con H2 en memoria. Cubren: GET lista, POST válido, POST inválido, GET 404, DELETE.
+Tests in `EventRoutesTest.kt` using an in-memory H2 database. Cover: GET list, valid POST, invalid POST, GET 404, DELETE.
 
-## Variables de entorno del backend
+## Backend environment variables
 
-Ver `backend/.env.example`:
+See `backend/.env.example`:
 
 ```
 PORT=8080

@@ -1,0 +1,70 @@
+### Variables
+@base = http://localhost:8080/api
+
+### ── Listar todos los eventos ───────────────────────────────────────────────
+GET {{base}}/events
+
+### ── Listar con filtros ──────────────────────────────────────────────────────
+GET {{base}}/events?status=published&category=Tecnología&sort=date_asc
+
+### ── Buscar por texto ────────────────────────────────────────────────────────
+GET {{base}}/events?search=conferencia
+
+### ── Obtener un evento por id (reemplaza el UUID por uno real) ───────────────
+GET {{base}}/events/00000000-0000-0000-0000-000000000001
+
+### ── Crear un evento ─────────────────────────────────────────────────────────
+POST {{base}}/events
+Content-Type: application/json
+
+{
+  "title": "Workshop de Kotlin",
+  "description": "Taller de introducción a Kotlin y Ktor para desarrolladores Java.",
+  "eventDate": "2026-09-10",
+  "eventTime": "09:30",
+  "location": "Espacio Coworking, Madrid",
+  "category": "Taller",
+  "capacity": 40,
+  "price": 0.00,
+  "organizer": "JVM España",
+  "status": "draft"
+}
+
+### ── Actualizar un evento ────────────────────────────────────────────────────
+PUT {{base}}/events/00000000-0000-0000-0000-000000000001
+Content-Type: application/json
+
+{
+  "title": "Workshop de Kotlin (actualizado)",
+  "description": "Taller actualizado.",
+  "eventDate": "2026-09-11",
+  "eventTime": "10:00",
+  "location": "Espacio Coworking, Madrid",
+  "category": "Taller",
+  "capacity": 50,
+  "price": 10.00,
+  "organizer": "JVM España",
+  "status": "published"
+}
+
+### ── Eliminar un evento ───────────────────────────────────────────────────────
+DELETE {{base}}/events/00000000-0000-0000-0000-000000000001
+
+### ── Error: crear evento sin título ──────────────────────────────────────────
+POST {{base}}/events
+Content-Type: application/json
+
+{
+  "title": "",
+  "eventDate": "2026-09-10",
+  "eventTime": "09:30",
+  "location": "Madrid",
+  "category": "Taller",
+  "capacity": 40,
+  "price": 0,
+  "organizer": "Alguien",
+  "status": "draft"
+}
+
+### ── Error: id inexistente ───────────────────────────────────────────────────
+GET {{base}}/events/ffffffff-ffff-ffff-ffff-ffffffffffff

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker version:*)",
+      "Read(//var/run/**)",
+      "Read(//etc/**)",
+      "Read(//run/snap.docker/**)",
+      "Bash(docker compose up:*)",
+      "Bash(sudo docker:*)"
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+# Backend
+backend/build/
+backend/.gradle/
+backend/*.jar
+backend/local.properties
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/tmp/

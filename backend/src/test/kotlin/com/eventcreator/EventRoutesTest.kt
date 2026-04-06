@@ -28,7 +28,7 @@ class EventRoutesTest {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    // Configura una instancia de la app con H2 en memoria
+    // Configures an app instance with an in-memory H2 database
     private fun Application.testModule() {
         Database.connect(
             url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL",
@@ -42,7 +42,7 @@ class EventRoutesTest {
                 call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.errors.joinToString("; ")))
             }
             exception<NotFoundException> { call, cause ->
-                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "No encontrado"))
+                call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
             }
         }
         configureRouting()
@@ -120,7 +120,7 @@ class EventRoutesTest {
         val client = createClient {
             install(ClientContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
         }
-        // Crear primero
+        // Create first
         val created = client.post("/api/events") {
             contentType(ContentType.Application.Json)
             setBody(EventRequest(
@@ -137,11 +137,11 @@ class EventRoutesTest {
         }
         val event = json.decodeFromString<EventResponse>(created.bodyAsText())
 
-        // Borrar
+        // Delete
         val deleteResponse = client.delete("/api/events/${event.id}")
         assertEquals(HttpStatusCode.NoContent, deleteResponse.status)
 
-        // Verificar que ya no existe
+        // Verify it no longer exists
         val getResponse = client.get("/api/events/${event.id}")
         assertEquals(HttpStatusCode.NotFound, getResponse.status)
     }

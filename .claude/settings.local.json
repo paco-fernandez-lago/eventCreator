@@ -6,7 +6,10 @@
       "Read(//etc/**)",
       "Read(//run/snap.docker/**)",
       "Bash(docker compose up:*)",
-      "Bash(sudo docker:*)"
+      "Bash(sudo docker:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Bash(xargs -I{} curl -s -H \"Authorization: token {}\" https://api.github.com/ -I)"
     ]
   }
 }

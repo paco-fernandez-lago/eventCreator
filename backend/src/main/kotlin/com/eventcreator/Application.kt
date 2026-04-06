@@ -26,7 +26,7 @@ fun Application.module() {
         })
     }
 
-    // CORS: permite cualquier origen en desarrollo; ajustar en producción
+    // CORS: allow any origin in development; restrict in production
     install(CORS) {
         anyHost()
         allowHeader(HttpHeaders.ContentType)
@@ -37,26 +37,26 @@ fun Application.module() {
         allowMethod(HttpMethod.Delete)
     }
 
-    // Manejo centralizado de errores
+    // Centralised error handling
     install(StatusPages) {
         exception<ValidationException> { call, cause ->
             call.respond(HttpStatusCode.BadRequest, ErrorResponse(cause.errors.joinToString("; ")))
         }
         exception<NotFoundException> { call, cause ->
-            call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "No encontrado"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse(cause.message ?: "Not found"))
         }
         exception<Throwable> { call, cause ->
-            call.application.log.error("Error inesperado", cause)
-            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Error interno del servidor"))
+            call.application.log.error("Unexpected error", cause)
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Internal server error"))
         }
     }
 
-    // Base de datos
+    // Database
     val dbUrl      = environment.config.property("database.url").getString()
     val dbUser     = environment.config.property("database.user").getString()
     val dbPassword = environment.config.property("database.password").getString()
     initDatabase(dbUrl, dbUser, dbPassword)
 
-    // Rutas
+    // Routes
     configureRouting()
 }

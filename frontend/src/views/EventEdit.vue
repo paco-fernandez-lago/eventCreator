@@ -41,7 +41,7 @@ async function load() {
   loadError.value = null
   try {
     const event = await getEvent(route.params.id)
-    // Normalizar eventTime a "HH:mm" para el input[type=time]
+    // Normalise eventTime to "HH:mm" for the input[type=time]
     initialData.value = { ...event, eventTime: event.eventTime.substring(0, 5) }
   } catch (e) {
     loadError.value = e.response?.status === 404

@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 data class EventRequest(
     val title: String,
     val description: String? = null,
-    val eventDate: String,   // formato ISO: "2026-05-15"
-    val eventTime: String,   // formato "HH:mm" o "HH:mm:ss"
+    val eventDate: String,   // ISO format: "2026-05-15"
+    val eventTime: String,   // format "HH:mm" or "HH:mm:ss"
     val location: String,
     val category: String,
     val capacity: Int,

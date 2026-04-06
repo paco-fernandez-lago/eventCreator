@@ -19,7 +19,7 @@ fun initDatabase(url: String, user: String, password: String) {
     Database.connect(dataSource)
 
     transaction {
-        // Crear la tabla si no existe, preservando todas las constraints
+        // Create table if it does not exist, preserving all constraints
         exec("""
             CREATE TABLE IF NOT EXISTS events (
                 id          UUID            PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -43,7 +43,7 @@ fun initDatabase(url: String, user: String, password: String) {
         exec("CREATE INDEX IF NOT EXISTS idx_events_category ON events(category)")
         exec("CREATE INDEX IF NOT EXISTS idx_events_date     ON events(event_date)")
 
-        // Seed solo si la tabla está vacía
+        // Seed only if the table is empty
         val count = Events.selectAll().count()
         if (count == 0L) {
             exec("""

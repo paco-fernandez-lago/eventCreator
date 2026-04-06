@@ -51,7 +51,7 @@ class EventRepository {
 
     fun create(req: EventRequest): EventResponse = transaction {
         val now = OffsetDateTime.now(ZoneOffset.UTC)
-        // insert{} en Table (no IdTable) devuelve un InsertStatement; sacamos el id del resultado
+        // insert{} on Table (not IdTable) returns an InsertStatement; extract the id from the result
         val stmt = Events.insert {
             it[title]       = req.title
             it[description] = req.description
@@ -99,7 +99,7 @@ class EventRepository {
         Events.deleteWhere { Events.id eq id } > 0
     }
 
-    // Helpers
+    // Private helpers
     private fun parseTime(value: String): LocalTime =
         if (value.length == 5) LocalTime.parse("$value:00") else LocalTime.parse(value)
 
@@ -108,7 +108,7 @@ class EventRepository {
         title       = this[Events.title],
         description = this[Events.description],
         eventDate   = this[Events.eventDate].toString(),
-        eventTime   = this[Events.eventTime].toString().substring(0, 5), // "HH:mm"
+        eventTime   = this[Events.eventTime].toString().substring(0, 5), // truncate to "HH:mm"
         location    = this[Events.location],
         category    = this[Events.category],
         capacity    = this[Events.capacity],
